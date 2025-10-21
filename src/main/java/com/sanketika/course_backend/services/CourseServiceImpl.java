@@ -5,8 +5,10 @@ import com.sanketika.course_backend.entity.Course;
 import com.sanketika.course_backend.excepections.ResourceNotFoundException;
 import com.sanketika.course_backend.mapper.CourseMapper;
 import com.sanketika.course_backend.repositories.CourseRepository;
+import com.sanketika.course_backend.specification.CourseSpecification;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -30,6 +32,11 @@ public class CourseServiceImpl implements CourseService {
                 .collect(Collectors.toList());
     }
 
+    @Override
+    public List<Course> findAllFiltered(String q, String board, String medium, String grade, String subject) {
+        Specification<Course> spec = CourseSpecification.filterBy(q, board, medium, grade, subject);
+        return courseRepository.findAll(spec);
+    }
     @Override
     public CourseDto getCourseById(UUID id) {
         try {
