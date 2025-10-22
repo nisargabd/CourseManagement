@@ -40,6 +40,7 @@ public class CourseController {
     ) {
         return courseService.findAllFiltered(q, board, medium, grade, subject);
     }
+
     // ✅ Get course by ID
     @GetMapping("/{id}")
     public ResponseEntity<ApiEnvelope<CourseDto>> getCourseById(@PathVariable UUID id) {
