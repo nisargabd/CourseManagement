@@ -2,18 +2,16 @@ package com.sanketika.course_backend.services;
 
 import com.sanketika.course_backend.dto.CourseDto;
 import com.sanketika.course_backend.entity.Course;
-import com.sanketika.course_backend.excepections.ResourceNotFoundException;
+import com.sanketika.course_backend.exceptions.ResourceNotFoundException;
 import com.sanketika.course_backend.mapper.CourseMapper;
 import com.sanketika.course_backend.repositories.CourseRepository;
-import com.sanketika.course_backend.specification.CourseSpecification;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.jpa.domain.Specification;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -26,27 +24,16 @@ public class CourseServiceImpl implements CourseService {
     private CourseMapper courseMapper;
 
     @Override
-    public List<CourseDto> getAllCourses() {
-        return courseRepository.findAll().stream()
-                .map(courseMapper::toDto)
-                .collect(Collectors.toList());
+    public Page<CourseDto> getAllCourses(Pageable p) {
+        Page<Course> page = courseRepository.findAll(p);
+        return page.map(courseMapper::toDto);
     }
 
-//    @Override
-//    public List<Course> findAllFiltered(String q, String board, String medium, String grade, String subject) {
-//        Specification<Course> spec = CourseSpecification.filterBy(q, board, medium, grade, subject);
-//        return courseRepository.findAll(spec);
-//    }
     @Override
     public CourseDto getCourseById(UUID id) {
-        try {
-            Course course = courseRepository.findById(id)
-                    .orElseThrow(() -> new ResourceNotFoundException("Course not found"));
-            return courseMapper.toDto(course);
-        }catch(Exception e){
-            System.out.println(e);
-        }
-        return null;
+        Course course = courseRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Course not found"));
+        return courseMapper.toDto(course);
     }
 
     @Override
@@ -58,7 +45,6 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     public CourseDto updateCourse(UUID id, CourseDto dto) {
-        try{
         Course existing = courseRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Course not found"));
 
@@ -71,20 +57,12 @@ public class CourseServiceImpl implements CourseService {
 
         Course updated = courseRepository.save(existing);
         return courseMapper.toDto(updated);
-    }catch(Exception e){
-            System.out.println(e);
-        }
-        return null;
     }
 
     @Override
     public void deleteCourse(UUID id) {
-        try{
         Course course = courseRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Course not found"));
         courseRepository.delete(course);
-    }catch(Exception e){
-            System.out.println(e);
-        }
     }
 }

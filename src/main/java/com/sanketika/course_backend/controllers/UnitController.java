@@ -19,7 +19,7 @@ public class UnitController {
     private UnitService unitService;
 
 
-    @GetMapping("/course/{courseId}")
+    @GetMapping("/course/get/{courseId}")
     public ResponseEntity<ApiEnvelope<List<UnitDto>>> getUnitsByCourse(@PathVariable UUID courseId) {
         List<UnitDto> units = unitService.getUnitsByCourse(courseId);
         ApiEnvelope<List<UnitDto>> response = ResponseMapper.success(
@@ -31,7 +31,7 @@ public class UnitController {
     }
 
 
-    @GetMapping("/{id}")
+    @GetMapping("/get/{id}")
     public ResponseEntity<ApiEnvelope<UnitDto>> getUnitById(@PathVariable UUID id) {
         UnitDto unit = unitService.getUnitById(id);
         ApiEnvelope<UnitDto> response = ResponseMapper.success(
@@ -42,7 +42,7 @@ public class UnitController {
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping
+    @PostMapping("/add")
     public ResponseEntity<ApiEnvelope<UnitDto>> createUnit(@RequestBody UnitDto dto){
         UnitDto created= unitService.createUnit(dto);
         ApiEnvelope<UnitDto> response = ResponseMapper.success(
@@ -54,7 +54,7 @@ public class UnitController {
     }
 
 
-    @PutMapping("/{id}")
+    @PutMapping("/update/{id}")
     public ResponseEntity<ApiEnvelope<UnitDto>> updateUnit(@PathVariable UUID id, @RequestBody UnitDto dto) {
         UnitDto updated = unitService.updateUnit(id, dto);
         ApiEnvelope<UnitDto> response = ResponseMapper.success(
@@ -65,7 +65,7 @@ public class UnitController {
         return ResponseEntity.ok(response);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/delete/{id}")
     public ResponseEntity<ApiEnvelope<Void>> deleteUnit(@PathVariable UUID id) {
         unitService.deleteUnit(id);
         ApiEnvelope<Void> response = ResponseMapper.success(

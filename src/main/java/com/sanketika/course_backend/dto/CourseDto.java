@@ -10,13 +10,22 @@ import java.util.UUID;
 public class CourseDto {
     private UUID id;
 
-    @NotBlank(message = "name is required")
+    @NotBlank(message = "Course name cannot be empty or null")
     private String name;
 
+    @NotBlank(message = "Description cannot be empty or null")
     private String description;
+
+    @NotBlank(message = "Board cannot be empty or null")
     private String board;
+
+    @NotBlank(message = "Medium cannot be empty or null")
     private String medium;
+
+    @NotBlank(message = "Grade cannot be empty or null")
     private String grade;
+
+    @NotBlank(message = "Subject cannot be empty or null")
     private String subject;
     private List<UnitDto> units;
 

@@ -3,7 +3,7 @@ package com.sanketika.course_backend.services;
 import com.sanketika.course_backend.dto.UnitDto;
 import com.sanketika.course_backend.entity.Course;
 import com.sanketika.course_backend.entity.Unit;
-import com.sanketika.course_backend.excepections.ResourceNotFoundException;
+import com.sanketika.course_backend.exceptions.ResourceNotFoundException;
 import com.sanketika.course_backend.mapper.UnitMapper;
 import com.sanketika.course_backend.repositories.CourseRepository;
 import com.sanketika.course_backend.repositories.UnitRepository;
