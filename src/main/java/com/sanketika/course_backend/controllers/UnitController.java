@@ -18,7 +18,7 @@ public class UnitController {
     @Autowired
     private UnitService unitService;
 
-    // ✅ Get all units of a specific course
+
     @GetMapping("/course/{courseId}")
     public ResponseEntity<ApiEnvelope<List<UnitDto>>> getUnitsByCourse(@PathVariable UUID courseId) {
         List<UnitDto> units = unitService.getUnitsByCourse(courseId);
@@ -30,7 +30,7 @@ public class UnitController {
         return ResponseEntity.ok(response);
     }
 
-    // ✅ Get single unit by ID
+
     @GetMapping("/{id}")
     public ResponseEntity<ApiEnvelope<UnitDto>> getUnitById(@PathVariable UUID id) {
         UnitDto unit = unitService.getUnitById(id);
@@ -42,7 +42,18 @@ public class UnitController {
         return ResponseEntity.ok(response);
     }
 
-    // ✅ Update a unit
+    @PostMapping
+    public ResponseEntity<ApiEnvelope<UnitDto>> createUnit(@RequestBody UnitDto dto){
+        UnitDto created= unitService.createUnit(dto);
+        ApiEnvelope<UnitDto> response = ResponseMapper.success(
+                "api.unit.create",
+                "Unit created successfully",
+                created
+        );
+        return ResponseEntity.ok(response);
+    }
+
+
     @PutMapping("/{id}")
     public ResponseEntity<ApiEnvelope<UnitDto>> updateUnit(@PathVariable UUID id, @RequestBody UnitDto dto) {
         UnitDto updated = unitService.updateUnit(id, dto);
@@ -54,7 +65,6 @@ public class UnitController {
         return ResponseEntity.ok(response);
     }
 
-    // ✅ Delete a unit
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiEnvelope<Void>> deleteUnit(@PathVariable UUID id) {
         unitService.deleteUnit(id);

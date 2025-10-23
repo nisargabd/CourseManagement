@@ -69,6 +69,13 @@ public class UnitServiceImpl implements UnitService {
     }
 
     @Override
+    public UnitDto createUnit(UnitDto dto){
+        Unit unit = unitMapper.toEntity(dto);
+        Unit saved = unitRepository.save(unit);
+        return unitMapper.toDto(saved);
+    }
+
+    @Override
     public void deleteUnit(UUID id) {
         try{
         Unit unit = unitRepository.findById(id)

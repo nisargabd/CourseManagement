@@ -18,13 +18,13 @@ public class UnitMapper {
         return dto;
     }
 
-    public Unit toEntity(UnitDto dto, Course course) {
+    public Unit toEntity(UnitDto dto) {
         if (dto == null) return null;
         Unit unit = new Unit();
         unit.setId(dto.getId());
         unit.setTitle(dto.getTitle());
         unit.setContent(dto.getContent());
-        unit.setCourse(course); // ✅ ensures courseId is set
+        unit.setId(dto.getCourseId());
         return unit;
     }
 }

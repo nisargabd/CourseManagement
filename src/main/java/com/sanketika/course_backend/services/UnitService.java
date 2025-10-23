@@ -3,6 +3,7 @@ package com.sanketika.course_backend.services;
 
 
 import com.sanketika.course_backend.dto.UnitDto;
+import com.sanketika.course_backend.entity.Course;
 
 import java.util.List;
 import java.util.UUID;
@@ -12,5 +13,7 @@ public interface UnitService {
     UnitDto getUnitById(UUID id);
     void deleteUnit(UUID id);
     UnitDto updateUnit(UUID id, UnitDto dto);
+
+    UnitDto createUnit(UnitDto dto);
 
 }

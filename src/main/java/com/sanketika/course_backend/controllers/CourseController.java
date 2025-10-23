@@ -1,7 +1,6 @@
 package com.sanketika.course_backend.controllers;
 
 import com.sanketika.course_backend.dto.CourseDto;
-import com.sanketika.course_backend.entity.Course;
 import com.sanketika.course_backend.mapper.ResponseMapper;
 import com.sanketika.course_backend.services.CourseService;
 import com.sanketika.course_backend.utils.ApiEnvelope;
@@ -20,7 +19,7 @@ public class CourseController {
     private CourseService courseService;
 
     // ✅ Get all courses
-    @GetMapping("/all")
+    @GetMapping
     public ResponseEntity<ApiEnvelope<List<CourseDto>>> getAllCourses() {
         List<CourseDto> courses = courseService.getAllCourses();
         ApiEnvelope<List<CourseDto>> response = ResponseMapper.success(
@@ -30,16 +29,16 @@ public class CourseController {
         );
         return ResponseEntity.ok(response);
     }
-    @GetMapping
-    public List<Course> list(
-            @RequestParam(required = false) String q,
-            @RequestParam(required = false) String board,
-            @RequestParam(required = false) String medium,
-            @RequestParam(required = false) String grade,
-            @RequestParam(required = false) String subject
-    ) {
-        return courseService.findAllFiltered(q, board, medium, grade, subject);
-    }
+//    @GetMapping
+//    public List<Course> list(
+//            @RequestParam(required = false) String q,
+//            @RequestParam(required = false) String board,
+//            @RequestParam(required = false) String medium,
+//            @RequestParam(required = false) String grade,
+//            @RequestParam(required = false) String subject
+//    ) {
+//        return courseService.findAllFiltered(q, board, medium, grade, subject);
+//    }
 
     // ✅ Get course by ID
     @GetMapping("/{id}")

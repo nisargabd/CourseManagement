@@ -32,11 +32,11 @@ public class CourseServiceImpl implements CourseService {
                 .collect(Collectors.toList());
     }
 
-    @Override
-    public List<Course> findAllFiltered(String q, String board, String medium, String grade, String subject) {
-        Specification<Course> spec = CourseSpecification.filterBy(q, board, medium, grade, subject);
-        return courseRepository.findAll(spec);
-    }
+//    @Override
+//    public List<Course> findAllFiltered(String q, String board, String medium, String grade, String subject) {
+//        Specification<Course> spec = CourseSpecification.filterBy(q, board, medium, grade, subject);
+//        return courseRepository.findAll(spec);
+//    }
     @Override
     public CourseDto getCourseById(UUID id) {
         try {
