@@ -44,14 +44,23 @@ public class CourseServiceImpl implements CourseService {
         return page.map(courseMapper::toDto);
     }
 
-    @Cacheable(value = "courses",key = "#id")
     @Override
+    @Cacheable(value = "courses", key = "#id")
     public CourseDto getCourseById(UUID id) {
-        Course course = courseRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Course not found"));
-        logger.info("Fetching course from DB with id {}", id);
-        return courseMapper.toDto(course);
+        try {
+            Course course = courseRepository.findById(id)
+                    .orElseThrow(() -> new ResourceNotFoundException("Course not found with ID: " + id));
+            logger.info("Fetching course from DB with ID {}", id);
+            return courseMapper.toDto(course);
+        } catch (ResourceNotFoundException ex) {
+            logger.error("Course not found with ID {}: {}", id, ex.getMessage());
+            throw ex; // rethrow to be handled by GlobalExceptionHandler
+        } catch (Exception ex) {
+            logger.error("Unexpected error while fetching course with ID {}", id, ex);
+            throw ex;
+        }
     }
+
 
     @Override
     public CourseDto createCourse(CourseDto dto) {
@@ -60,47 +69,62 @@ public class CourseServiceImpl implements CourseService {
         return courseMapper.toDto(saved);
     }
 
-    @CachePut(value = "courses",key = "#id")
     @Override
+    @CachePut(value = "courses", key = "#id")
     public CourseDto updateCourse(UUID id, CourseDto dto) {
-        Course existing = courseRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Course not found"));
+        try {
+            Course existing = courseRepository.findById(id)
+                    .orElseThrow(() -> new ResourceNotFoundException("Course not found with ID: " + id));
 
-        existing.setName(dto.getName());
-        existing.setDescription(dto.getDescription());
-        existing.setBoard(dto.getBoard());
-        existing.setMedium(dto.getMedium());
-        existing.setGrade(dto.getGrade());
-        existing.setSubject(dto.getSubject());
+            existing.setName(dto.getName());
+            existing.setDescription(dto.getDescription());
+            existing.setBoard(dto.getBoard());
+            existing.setMedium(dto.getMedium());
+            existing.setGrade(dto.getGrade());
+            existing.setSubject(dto.getSubject());
 
-        Course updated = courseRepository.save(existing);
-        logger.info("Updating course with id {}",id);
-        return courseMapper.toDto(updated);
+            Course updated = courseRepository.save(existing);
+            logger.info("Updated course successfully with ID {}", id);
+            return courseMapper.toDto(updated);
+
+        } catch (ResourceNotFoundException ex) {
+            logger.error("Cannot update course, not found ID {}: {}", id, ex.getMessage());
+            throw ex;
+        } catch (Exception ex) {
+            logger.error("Unexpected error while updating course with ID {}", id, ex);
+            throw ex;
+        }
     }
 
     @Override
-    @Transactional
     @CacheEvict(value = "courses", key = "#courseId")
     public void deleteCourse(UUID courseId) {
-        logger.info("Deleting course with id {}", courseId);
+        try {
+            logger.warn("Deleting course with ID: {}", courseId);
 
-        Course course = courseRepository.findById(courseId)
-                .orElseThrow(() -> new ResourceNotFoundException("Course not found"));
+            Course course = courseRepository.findById(courseId)
+                    .orElseThrow(() -> new ResourceNotFoundException("Course not found with ID: " + courseId));
 
-        // Explicitly detach units BEFORE deleting the course
-        List<Unit> units = unitRepository.findByCourseId(courseId);
-        if (!units.isEmpty()) {
-            for (Unit u : units) {
-                u.setCourse(null);
+            List<Unit> units = unitRepository.findByCourseId(courseId);
+            if (!units.isEmpty()) {
+                for (Unit u : units) {
+                    u.setCourse(null);
+                }
+                unitRepository.saveAllAndFlush(units);
             }
-            unitRepository.saveAllAndFlush(units);  // ensures FK null before delete
+            course.setUnits(null);
+            courseRepository.delete(course);
+
+            logger.info("Course deleted successfully with ID {}", courseId);
+
+        } catch (ResourceNotFoundException ex) {
+            logger.error("Cannot delete course, not found ID {}: {}", courseId, ex.getMessage());
+            throw ex;
+        } catch (Exception ex) {
+            logger.error("Unexpected error while deleting course with ID {}", courseId, ex);
+            throw ex;
         }
-
-        // Detach from JPA context to avoid cascade reattach issues
-        course.setUnits(null);
-
-        courseRepository.delete(course);
-        logger.info("Course deleted successfully with id {}", courseId);
     }
+
 
 }
