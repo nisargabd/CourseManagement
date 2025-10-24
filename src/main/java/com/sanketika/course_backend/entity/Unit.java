@@ -28,7 +28,7 @@ public class Unit {
     private LocalDateTime updatedAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "course_id")
+    @JoinColumn(name = "course_id", nullable = true)
     @JsonBackReference
     private Course course;
 

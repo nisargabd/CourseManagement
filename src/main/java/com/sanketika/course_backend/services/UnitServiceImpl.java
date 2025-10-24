@@ -7,7 +7,12 @@ import com.sanketika.course_backend.exceptions.ResourceNotFoundException;
 import com.sanketika.course_backend.mapper.UnitMapper;
 import com.sanketika.course_backend.repositories.CourseRepository;
 import com.sanketika.course_backend.repositories.UnitRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,6 +21,7 @@ import java.util.stream.Collectors;
 
 @Service
 public class UnitServiceImpl implements UnitService {
+    private static final Logger logger = LoggerFactory.getLogger(UnitService.class);
 
     @Autowired
     private UnitRepository unitRepository;
@@ -32,22 +38,17 @@ public class UnitServiceImpl implements UnitService {
                 .map(unitMapper::toDto)
                 .collect(Collectors.toList());
     }
-
+@Cacheable(value = "units",key = "#id")
     @Override
     public UnitDto getUnitById(UUID id) {
-        try {
             Unit unit = unitRepository.findById(id)
                     .orElseThrow(() -> new ResourceNotFoundException("Unit not found"));
+    logger.info("Fetching course from DB with id {}", id);
             return unitMapper.toDto(unit);
-        }catch (Exception e){
-            System.out.println(e);
         }
-        return null;
-    }
-
+@CachePut(value = "units",key = "#id")
     @Override
     public UnitDto updateUnit(UUID id, UnitDto dto) {
-        try{
         Unit existing = unitRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Unit not found"));
 
@@ -61,11 +62,8 @@ public class UnitServiceImpl implements UnitService {
         }
 
         Unit updated = unitRepository.save(existing);
+        logger.info("Updating course with id {}",id);
         return unitMapper.toDto(updated);
-    }catch(Exception e){
-            System.out.println(e);
-        }
-        return null;
     }
 
     @Override
@@ -74,15 +72,13 @@ public class UnitServiceImpl implements UnitService {
         Unit saved = unitRepository.save(unit);
         return unitMapper.toDto(saved);
     }
-
+@CacheEvict(value = "units",key = "#id")
     @Override
     public void deleteUnit(UUID id) {
-        try{
         Unit unit = unitRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Unit not found"));
+    logger.info("Deleting course with id {}", id);
         unitRepository.delete(unit);
-    }catch (Exception e){
-            System.out.println(e);
-        }
+
     }
 }
