@@ -13,11 +13,22 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/units")
+@CrossOrigin(origins = {"http://localhost:4800", "http://localhost:4200"})
 public class UnitController {
 
     @Autowired
     private UnitService unitService;
 
+    @GetMapping
+    public ResponseEntity<ApiEnvelope<List<UnitDto>>> getAllUnits() {
+        List<UnitDto> units = unitService.getAllUnits();
+        ApiEnvelope<List<UnitDto>> response = ResponseMapper.success(
+                "api.unit.list",
+                "Units fetched successfully",
+                units
+        );
+        return ResponseEntity.ok(response);
+    }
 
     @GetMapping("/course/get/{courseId}")
     public ResponseEntity<ApiEnvelope<List<UnitDto>>> getUnitsByCourse(@PathVariable UUID courseId) {

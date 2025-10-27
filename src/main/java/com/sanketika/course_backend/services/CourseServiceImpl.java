@@ -1,6 +1,7 @@
 package com.sanketika.course_backend.services;
 
 import com.sanketika.course_backend.dto.CourseDto;
+import com.sanketika.course_backend.dto.UnitDto;
 import com.sanketika.course_backend.entity.Course;
 import com.sanketika.course_backend.entity.Unit;
 import com.sanketika.course_backend.exceptions.ResourceNotFoundException;
@@ -18,6 +19,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -76,6 +78,7 @@ public class CourseServiceImpl implements CourseService {
             Course existing = courseRepository.findById(id)
                     .orElseThrow(() -> new ResourceNotFoundException("Course not found with ID: " + id));
 
+            // Update basic course fields
             existing.setName(dto.getName());
             existing.setDescription(dto.getDescription());
             existing.setBoard(dto.getBoard());
@@ -83,8 +86,56 @@ public class CourseServiceImpl implements CourseService {
             existing.setGrade(dto.getGrade());
             existing.setSubject(dto.getSubject());
 
+            // Handle units update
+            if (dto.getUnits() != null) {
+                // Get current units
+                List<Unit> currentUnits = existing.getUnits();
+                
+                // Collect IDs of units from DTO
+                List<UUID> dtoUnitIds = dto.getUnits().stream()
+                        .map(UnitDto::getId)
+                        .filter(unitId -> unitId != null)
+                        .toList();
+
+                // Step 1: Disconnect units that are no longer in the DTO
+                List<Unit> unitsToRemove = new ArrayList<>();
+                for (Unit unit : currentUnits) {
+                    if (!dtoUnitIds.contains(unit.getId())) {
+                        unit.setCourse(null);
+                        unitsToRemove.add(unit);
+                    }
+                }
+                currentUnits.removeAll(unitsToRemove);
+
+                // Step 2: Add or update units from DTO
+                for (UnitDto unitDto : dto.getUnits()) {
+                    if (unitDto.getId() != null) {
+                        // Fetch the unit from database
+                        Unit unit = unitRepository.findById(unitDto.getId())
+                                .orElseThrow(() -> new ResourceNotFoundException("Unit not found with ID: " + unitDto.getId()));
+                        
+                        // Update unit fields
+                        unit.setTitle(unitDto.getTitle());
+                        unit.setContent(unitDto.getContent());
+                        
+                        // Check if unit is already associated with this course
+                        boolean alreadyInCourse = currentUnits.stream()
+                                .anyMatch(u -> u.getId().equals(unit.getId()));
+                        
+                        if (!alreadyInCourse) {
+                            // New unit for this course - establish bidirectional relationship
+                            unit.setCourse(existing);
+                            currentUnits.add(unit);
+                        } else {
+                            // Unit already in course, just ensure the relationship is set
+                            unit.setCourse(existing);
+                        }
+                    }
+                }
+            }
+
             Course updated = courseRepository.save(existing);
-            logger.info("Updated course successfully with ID {}", id);
+            logger.info("Updated course successfully with ID {} including {} units", id, updated.getUnits().size());
             return courseMapper.toDto(updated);
 
         } catch (ResourceNotFoundException ex) {
