@@ -66,9 +66,72 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     public CourseDto createCourse(CourseDto dto) {
-        Course course = courseMapper.toEntity(dto);
-        Course saved = courseRepository.save(course);
-        return courseMapper.toDto(saved);
+        try {
+            logger.info("Creating new course: {}", dto.getName());
+            
+            // Create the course entity without units first
+            Course course = new Course();
+            course.setName(dto.getName());
+            course.setDescription(dto.getDescription());
+            course.setBoard(dto.getBoard());
+            course.setMedium(dto.getMedium());
+            course.setGrade(dto.getGrade());
+            course.setSubject(dto.getSubject());
+            
+            // Save the course first to get the ID
+            Course savedCourse = courseRepository.save(course);
+            logger.info("Course saved with ID: {}", savedCourse.getId());
+            
+            // Handle units separately
+            if (dto.getUnits() != null && !dto.getUnits().isEmpty()) {
+                List<Unit> unitsToAssociate = new ArrayList<>();
+                
+                for (UnitDto unitDto : dto.getUnits()) {
+                    if (unitDto.getId() != null) {
+                        // This is an existing unit - fetch it and associate with the course
+                        try {
+                            Unit existingUnit = unitRepository.findById(unitDto.getId())
+                                    .orElseThrow(() -> new ResourceNotFoundException("Unit not found with ID: " + unitDto.getId()));
+                            
+                            // Disconnect from previous course if any
+                            existingUnit.setCourse(null);
+                            unitRepository.save(existingUnit);
+                            
+                            // Associate with new course
+                            existingUnit.setCourse(savedCourse);
+                            unitsToAssociate.add(existingUnit);
+                            
+                            logger.info("Associated existing unit {} with new course {}", unitDto.getId(), savedCourse.getId());
+                        } catch (ResourceNotFoundException ex) {
+                            logger.warn("Unit with ID {} not found, skipping: {}", unitDto.getId(), ex.getMessage());
+                        }
+                    } else {
+                        // This is a new unit - create it
+                        Unit newUnit = new Unit();
+                        newUnit.setTitle(unitDto.getTitle());
+                        newUnit.setContent(unitDto.getContent());
+                        newUnit.setCourse(savedCourse);
+                        unitsToAssociate.add(newUnit);
+                        
+                        logger.info("Created new unit for course {}", savedCourse.getId());
+                    }
+                }
+                
+                // Save all units
+                if (!unitsToAssociate.isEmpty()) {
+                    unitRepository.saveAll(unitsToAssociate);
+                    savedCourse.setUnits(unitsToAssociate);
+                    logger.info("Associated {} units with course {}", unitsToAssociate.size(), savedCourse.getId());
+                }
+            }
+            
+            logger.info("Course creation completed successfully with ID: {}", savedCourse.getId());
+            return courseMapper.toDto(savedCourse);
+            
+        } catch (Exception ex) {
+            logger.error("Error creating course: {}", ex.getMessage(), ex);
+            throw ex;
+        }
     }
 
     @Override

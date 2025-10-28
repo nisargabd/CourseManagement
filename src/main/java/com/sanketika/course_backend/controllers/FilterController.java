@@ -1,25 +1,29 @@
 package com.sanketika.course_backend.controllers;
 
 import com.sanketika.course_backend.dto.FilterOptionsDto;
-import com.sanketika.course_backend.services.FilterService;
+import com.sanketika.course_backend.services.FilterOptionsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+/**
+ * Controller for filter options
+ */
 @RestController
-@RequestMapping("/api/courses/filters")
-//@CrossOrigin(origins = "*")
+@CrossOrigin(origins = {"http://localhost:4800", "http://localhost:4200"})
+@RequestMapping("/api/filters")
 public class FilterController {
 
     @Autowired
-    private FilterService filterService;
+    private FilterOptionsService filterOptionsService;
 
-    @GetMapping
+    /**
+     * Get all available filter options
+     * @return FilterOptionsDto containing boards, mediums, grades, and subjects
+     */
+    @GetMapping("/options")
     public ResponseEntity<FilterOptionsDto> getFilterOptions() {
-        return ResponseEntity.ok(filterService.getFilterOptions());
+        FilterOptionsDto options = filterOptionsService.getFilterOptions();
+        return ResponseEntity.ok(options);
     }
-
 }

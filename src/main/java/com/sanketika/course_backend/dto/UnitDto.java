@@ -1,9 +1,5 @@
 package com.sanketika.course_backend.dto;
 
-import com.sanketika.course_backend.entity.Course;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 import java.util.UUID;
@@ -18,5 +14,10 @@ public class UnitDto {
 
     public UnitDto(){
 
+    }
+
+    public UnitDto(String title, String content) {
+        this.title = title;
+        this.content = content;
     }
 }
