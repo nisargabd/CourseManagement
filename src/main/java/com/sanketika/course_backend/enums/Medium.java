@@ -7,7 +7,8 @@ public enum Medium {
     ENGLISH("English"),
     HINDI("Hindi"),
     KANNADA("Kannada"),
-    TELUGU("Telugu");
+    TELUGU("Telugu"),
+    TAMIL("Tamil");
 
     private final String displayName;
 
