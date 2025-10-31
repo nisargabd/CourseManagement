@@ -1,6 +1,7 @@
 package com.sanketika.course_backend.controllers;
 
 import com.sanketika.course_backend.dto.FilterOptionsDto;
+import com.sanketika.course_backend.dto.FilterRequestDto;
 import com.sanketika.course_backend.services.CourseServiceImpl;
 import com.sanketika.course_backend.services.FilterOptionsService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,30 +24,49 @@ public class FilterController {
     @Autowired
     private CourseServiceImpl courseService;
 
-    @GetMapping("/boards")
-    public ResponseEntity<List<String>> getBoards() {
-        return ResponseEntity.ok(courseService.getAllBoards());
+    @PostMapping("/mediums")
+    public ResponseEntity<List<String>> getMediumsByBoard(@RequestBody FilterRequestDto request) {
+        return ResponseEntity.ok(courseService.getMediumsByBoard(request.getBoard()));
     }
 
-    @GetMapping("/mediums")
-    public ResponseEntity<List<String>> getMediumsByBoard(@RequestParam String board) {
-        return ResponseEntity.ok(courseService.getMediumsByBoard(board));
+    @PostMapping("/grades")
+    public ResponseEntity<List<String>> getGradesByBoardAndMedium(@RequestBody FilterRequestDto request) {
+        return ResponseEntity.ok(courseService.getGradesByBoardAndMedium(request.getBoard(), request.getMedium()));
     }
 
-    @GetMapping("/grades")
-    public ResponseEntity<List<String>> getGradesByBoardAndMedium(
-            @RequestParam String board,
-            @RequestParam String medium) {
-        return ResponseEntity.ok(courseService.getGradesByBoardAndMedium(board, medium));
+     @PostMapping("/subjects")
+    public ResponseEntity<List<String>> getSubjectsByBoardMediumAndGrade(@RequestBody FilterRequestDto request) {
+        return ResponseEntity.ok(courseService.getSubjectsByBoardMediumAndGrade(
+                request.getBoard(),
+                request.getMedium(),
+                request.getGrade()
+        ));
     }
 
-    @GetMapping("/subjects")
-    public ResponseEntity<List<String>> getSubjectsByBoardMediumAndGrade(
-            @RequestParam String board,
-            @RequestParam String medium,
-            @RequestParam String grade) {
-        return ResponseEntity.ok(courseService.getSubjectsByBoardMediumAndGrade(board, medium, grade));
-    }
+   @GetMapping("/boards")
+   public ResponseEntity<List<String>> getBoards() {
+       return ResponseEntity.ok(courseService.getAllBoards());
+   }
+//
+//    @GetMapping("/mediums")
+//    public ResponseEntity<List<String>> getMediumsByBoard(@RequestBody String board) {
+//        return ResponseEntity.ok(courseService.getMediumsByBoard(board));
+//    }
+//
+//    @GetMapping("/grades")
+//    public ResponseEntity<List<String>> getGradesByBoardAndMedium(
+//            @RequestBody String board,
+//            @RequestBody String medium) {
+//        return ResponseEntity.ok(courseService.getGradesByBoardAndMedium(board, medium));
+//    }
+//
+//    @GetMapping("/subjects")
+//    public ResponseEntity<List<String>> getSubjectsByBoardMediumAndGrade(
+//            @RequestBody String board,
+//            @RequestBody String medium,
+//            @RequestBody String grade) {
+//        return ResponseEntity.ok(courseService.getSubjectsByBoardMediumAndGrade(board, medium, grade));
+//    }
 
     /**
      * Get all available filter options

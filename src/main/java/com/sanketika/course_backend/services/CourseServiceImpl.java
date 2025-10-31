@@ -49,18 +49,14 @@ public class CourseServiceImpl implements CourseService {
         return courseRepository.findDistinctMediumByBoard(board);
     }
 
-    public List<String> getGradesByBoardAndMedium(String board, String medium) {
-        try {
-            return courseRepository.findDistinctGradeByBoardAndMedium(board, medium);
-        }catch(Exception e){
-            e.printStackTrace();
-        }
-        return null;
+    public List<String> getGradesByBoardAndMedium(String board, List<String> mediums) {
+        return courseRepository.findDistinctGradeByBoardAndMediums(board, mediums);
     }
 
-    public List<String> getSubjectsByBoardMediumAndGrade(String board, String medium, String grade) {
-        return courseRepository.findDistinctSubjectByBoardAndMediumAndGrade(board,medium,grade);
-    }
+
+   public List<String> getSubjectsByBoardMediumAndGrade(String board, List<String> mediums, List<String> grades) {
+    return courseRepository.findDistinctSubjectsByBoardMediumsAndGrades(board, mediums, grades);
+}
 
     @Override
     public Page<CourseDto> getAllCourses(Pageable p) {
