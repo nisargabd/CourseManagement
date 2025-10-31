@@ -40,6 +40,28 @@ public class CourseServiceImpl implements CourseService {
     @Autowired
     private CourseMapper courseMapper;
 
+
+    public List<String> getAllBoards() {
+        return courseRepository.findDistinctBoards();
+    }
+
+    public List<String> getMediumsByBoard(String board) {
+        return courseRepository.findDistinctMediumByBoard(board);
+    }
+
+    public List<String> getGradesByBoardAndMedium(String board, String medium) {
+        try {
+            return courseRepository.findDistinctGradeByBoardAndMedium(board, medium);
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public List<String> getSubjectsByBoardMediumAndGrade(String board, String medium, String grade) {
+        return courseRepository.findDistinctSubjectByBoardAndMediumAndGrade(board,medium,grade);
+    }
+
     @Override
     public Page<CourseDto> getAllCourses(Pageable p) {
         Page<Course> page = courseRepository.findAll(p);

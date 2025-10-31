@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -17,15 +18,18 @@ public interface CourseRepository extends JpaRepository<Course, UUID>, JpaSpecif
 
     Page<Course> findAll(Pageable pageable);
 
-    @Query("SELECT DISTINCT c.board FROM Course c WHERE c.board IS NOT NULL")
+    @Query("SELECT DISTINCT c.board from Course c")
     List<String> findDistinctBoards();
 
-    @Query("SELECT DISTINCT c.medium FROM Course c WHERE c.medium IS NOT NULL")
-    List<String> findDistinctMediums();
+    @Query("Select distinct c.medium from Course c where c.board=:board")
+    List<String> findDistinctMediumByBoard(@Param("board") String board);
 
-    @Query("SELECT DISTINCT c.grade FROM Course c WHERE c.grade IS NOT NULL")
-    List<String> findDistinctGrades();
+    @Query("SELECT DISTINCT c.grade FROM Course c WHERE c.board = :board AND c.medium = :medium")
+    List<String> findDistinctGradeByBoardAndMedium(@Param("board") String board,@Param("medium") String medium);
 
-    @Query("SELECT DISTINCT c.subject FROM Course c WHERE c.subject IS NOT NULL")
-    List<String> findDistinctSubjects();
+    @Query("SELECT DISTINCT c.subject from Course c where c.board=:board and c.medium=:medium")
+    List<String> findDistinctSubjectByBoardAndMediumAndGrade(@Param("board") String board,
+                                                             @Param("medium") String medium,
+                                                             @Param("grade") String grade);
+
 }
