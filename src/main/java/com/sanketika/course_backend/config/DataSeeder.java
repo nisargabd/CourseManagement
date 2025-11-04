@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Random;
+// import java.util.Random;
 
 /**
  * This class seeds the database with diverse, meaningful sample courses when the app starts.
@@ -20,7 +20,7 @@ public class DataSeeder implements CommandLineRunner {
 
     private final CourseService courseService;
     private final CourseRepository courseRepository;
-    private final Random random = new Random();
+    // private final Random random = new Random();
 
     public DataSeeder(CourseService courseService, CourseRepository courseRepository) {
         this.courseService = courseService;

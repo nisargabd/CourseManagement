@@ -14,7 +14,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+// import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -37,18 +37,7 @@ public class CourseController {
         return ResponseEntity.ok(courseService.getAllCourses(pageable));
 
     }
-//    @GetMapping
-//    public List<Course> list(
-//            @RequestParam(required = false) String q,
-//            @RequestParam(required = false) String board,
-//            @RequestParam(required = false) String medium,
-//            @RequestParam(required = false) String grade,
-//            @RequestParam(required = false) String subject
-//    ) {
-//        return courseService.findAllFiltered(q, board, medium, grade, subject);
-//    }
-
-    // ✅ Get course by ID
+    
     @GetMapping("/get/{id}")
     public ResponseEntity<ApiEnvelope<CourseDto>> getCourseById(@PathVariable UUID id) {
         logger.info("Fetching course with ID: {}", id);

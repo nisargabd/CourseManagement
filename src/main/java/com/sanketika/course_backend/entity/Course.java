@@ -23,15 +23,15 @@ public class Course {
     private String description;
     private String board;
 
-    @Column(columnDefinition = "jsonb")
+    @Column
     @Convert(converter = StringListConverter.class)
     private List<String> medium;
 
-    @Column(columnDefinition = "jsonb")
+    @Column
     @Convert(converter = StringListConverter.class)
     private List<String> grade;
 
-    @Column(columnDefinition = "jsonb")
+    @Column
     @Convert(converter = StringListConverter.class)
     private List<String> subject;
 

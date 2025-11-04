@@ -1,10 +1,6 @@
 package com.sanketika.course_backend.services;
 
-
-
 import com.sanketika.course_backend.dto.UnitDto;
-import com.sanketika.course_backend.entity.Course;
-
 import java.util.List;
 import java.util.UUID;
 

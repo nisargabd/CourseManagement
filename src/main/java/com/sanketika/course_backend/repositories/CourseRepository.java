@@ -1,6 +1,6 @@
 package com.sanketika.course_backend.repositories;
 
-import com.sanketika.course_backend.dto.CourseDto;
+// import com.sanketika.course_backend.dto.CourseDto;
 import com.sanketika.course_backend.entity.Course;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

@@ -1,11 +1,11 @@
 package com.sanketika.course_backend.services;
 
 import com.sanketika.course_backend.dto.CourseDto;
-import com.sanketika.course_backend.entity.Course;
+// import com.sanketika.course_backend.entity.Course;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import java.util.List;
+// import java.util.List;
 import java.util.UUID;
 
 public interface CourseService {
